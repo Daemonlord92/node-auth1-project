@@ -1,4 +1,3 @@
-const express = require('express');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 
@@ -8,6 +7,10 @@ const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 
+const isLoggedIn = require('./auth/is-logged-in');
+
+const userRouter = require('./users/user-router');
+const authRouter = require('./auth/auth-router');
 
 const server = express();
 
@@ -34,8 +37,10 @@ const sessionConfig = {
 server.use(helmet());
 server.use(express.json());
 server.use(cors());
-server.use(cookieParser);
 server.use(session(sessionConfig));
+
+server.use("/api/users", isLoggedIn, userRouter);
+server.use("/api/auth", authRouter);
 
 server.get("/", (req, res) => {
 	res.json({
